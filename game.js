@@ -157,9 +157,21 @@ function beginPointer(event) {
 function pointerPosition(event, piece) {
   const lift = event.pointerType === 'touch' ? 72 : 0;
   const x = event.clientX, y = event.clientY - lift;
-  const rect = $('board').getBoundingClientRect(), size = rect.width / GRID_SIZE;
-  const anchorRow = Math.floor((y - rect.top) / size), anchorCol = Math.floor((x - rect.left) / size);
-  return { x, y, ...anchorFor(piece.matrix, anchorRow, anchorCol) };
+  const first = document.querySelector('.cell[data-row="0"][data-col="0"]')?.getBoundingClientRect();
+  const right = document.querySelector('.cell[data-row="0"][data-col="1"]')?.getBoundingClientRect();
+  const below = document.querySelector('.cell[data-row="1"][data-col="0"]')?.getBoundingClientRect();
+  if (!first || !right || !below) return { x, y, row: -1, col: -1, ghostX: x, ghostY: y, size: 28, gap: 2 };
+  const strideX = right.left - first.left, strideY = below.top - first.top;
+  const anchorRow = Math.round((y - (first.top + first.height / 2)) / strideY);
+  const anchorCol = Math.round((x - (first.left + first.width / 2)) / strideX);
+  const start = anchorFor(piece.matrix, anchorRow, anchorCol);
+  return {
+    ...start,
+    ghostX: first.left + first.width / 2 + (start.col + (piece.matrix[0].length - 1) / 2) * strideX,
+    ghostY: first.top + first.height / 2 + (start.row + (piece.matrix.length - 1) / 2) * strideY,
+    size: first.width,
+    gap: Math.max(0, strideX - first.width)
+  };
 }
 
 function makeGhost(piece) {
@@ -176,7 +188,9 @@ function movePointer(event) {
   const piece = state.tray[pointerState.index]; if (!piece) return cancelPointer();
   if (!pointerState.dragging) { pointerState.dragging = true; pointerState.ghost = makeGhost(piece); selectedIndex = pointerState.index; document.querySelector(`.piece[data-index="${selectedIndex}"]`)?.classList.add('picked'); }
   const pos = pointerPosition(event, piece); pointerState.row = pos.row; pointerState.col = pos.col;
-  pointerState.ghost.style.left = `${pos.x}px`; pointerState.ghost.style.top = `${pos.y}px`;
+  pointerState.ghost.style.setProperty('--ghost-size', `${pos.size}px`);
+  pointerState.ghost.style.gap = `${pos.gap}px`;
+  pointerState.ghost.style.left = `${pos.ghostX}px`; pointerState.ghost.style.top = `${pos.ghostY}px`;
   pointerState.ghost.classList.toggle('invalid', !preview(piece.matrix, pos.row, pos.col));
 }
 
