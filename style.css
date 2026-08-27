@@ -10,3 +10,8 @@ html{background:var(--paper)}body{margin:0;min-width:320px;background:var(--pape
 @keyframes screen-in{from{opacity:0;transform:translateY(8px)}}@keyframes sheet-up{from{transform:translateY(100%)}}@keyframes hero-float{50%{translate:0 -8px;rotate:3deg}}@keyframes tile-pop{0%{transform:scale(.65)}70%{transform:scale(1.08)}}@keyframes piece-enter{from{opacity:0;transform:translateY(15px) scale(.9)}}@keyframes clear-bloom{35%{transform:scale(.82);filter:brightness(1.5)}75%{transform:scale(1.14)}100%{transform:scale(.1);opacity:0}}@keyframes board-pulse{50%{transform:scale(1.012)}}@keyframes message-rise{0%{opacity:0;transform:translate(-50%,0) scale(.7)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-100%)}}
 @media(max-height:760px) and (min-width:500px){.game-header{height:62px}.board-wrap{width:min(100%,350px)}.piece-tray{min-height:78px}.piece{height:68px}.tray-section{margin-top:8px;padding-top:8px}}@media(max-width:420px){.play-screen{padding-inline:9px}.game-header{height:66px}.piece-tray{min-height:86px}.piece{height:76px;padding:4px}.drag-ghost{--ghost-size:25px}.hero-art{margin-top:28px}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 .drag-ghost{transform:translate(-50%,-50%) scale(1.06)}
+
+/* Tighter tile spacing for a fuller, more connected board. */
+.board{gap:clamp(2px,.65vw,4px);padding:clamp(5px,1.2vw,7px)}
+.piece-row{gap:2px}
+.drag-ghost{gap:2px}
