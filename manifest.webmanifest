@@ -1,0 +1,11 @@
+{
+  "name": "Block Bloom",
+  "short_name": "Block Bloom",
+  "description": "A calm, colorful block puzzle about finding your flow.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f0e5",
+  "theme_color": "#f5f0e5",
+  "orientation": "portrait-primary",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
