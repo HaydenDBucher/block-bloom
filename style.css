@@ -15,3 +15,4 @@ html{background:var(--paper)}body{margin:0;min-width:320px;background:var(--pape
 .board{gap:clamp(2px,.65vw,4px);padding:clamp(5px,1.2vw,7px)}
 .piece-row{gap:2px}
 .drag-ghost{gap:2px}
+.run-summary{display:flex;gap:22px;margin:-7px 0 19px;color:#c9cbc5;font-size:11px}.run-summary span{display:grid;text-align:center}.run-summary b{color:#fff;font-size:16px}.game-over>span{margin-bottom:12px}

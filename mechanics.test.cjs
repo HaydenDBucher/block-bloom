@@ -2,6 +2,10 @@ const fs = require('fs');
 const vm = require('vm');
 
 let source = fs.readFileSync('game.js', 'utf8');
+const html = fs.readFileSync('index.html', 'utf8');
+const referencedIds = [...source.matchAll(/\$\('([^']+)'\)/g)].map(match => match[1]);
+const missingIds = [...new Set(referencedIds)].filter(id => !html.includes(`id="${id}"`));
+if (missingIds.length) throw new Error(`Missing HTML targets: ${missingIds.join(', ')}`);
 source = source.slice(0, source.indexOf("document.addEventListener('pointermove'"));
 source += `
   let passed = 0;

@@ -19,7 +19,7 @@
         <div class="hero-art" aria-hidden="true"><span class="hero-tile coral"></span><span class="hero-tile gold"></span><span class="hero-tile blue"></span><span class="hero-tile mint"></span><span class="hero-tile mint"></span></div>
         <p class="eyebrow">A little space to think</p>
         <h1>Find your flow.</h1>
-        <p class="home-subtitle">Place shapes, complete lines, and keep the board blooming.</p>
+        <p class="home-subtitle">Drag or tap the three shapes. Fill a row or column to clear it. The run ends when no piece fits.</p>
         <button class="primary-button" id="startGame"><span>Play</span><small id="continueLabel">NEW GAME</small></button>
         <div class="home-stats" aria-label="Your best statistics">
           <div><strong id="homeBestScore">0</strong><span>BEST</span></div><div><strong id="homeLines">0</strong><span>LINES</span></div><div><strong id="homeBestCombo">0</strong><span>BEST FLOW</span></div>
@@ -49,10 +49,10 @@
         <div class="board-wrap">
           <div class="board" id="board" role="grid" aria-label="8 by 8 block puzzle board"></div>
           <div class="board-message" id="boardMessage" aria-live="polite"></div>
-          <div class="game-over" id="gameOver" aria-hidden="true"><div class="game-over-bloom" aria-hidden="true">✦</div><p>RUN COMPLETE</p><strong id="finalScore">0</strong><span>points</span><button class="primary-button" id="playAgain">Play again</button><button class="text-button" id="gameOverHome">Back home</button></div>
+          <div class="game-over" id="gameOver" aria-hidden="true"><div class="game-over-bloom" aria-hidden="true">✦</div><p>RUN COMPLETE</p><strong id="finalScore">0</strong><span>points</span><div class="run-summary"><span><b id="finalLines">0</b> lines</span><span><b id="finalFlow">0</b> best flow</span></div><button class="primary-button" id="playAgain">Play again</button><button class="text-button" id="gameOverHome">Back home</button></div>
         </div>
         <section class="tray-section" aria-labelledby="trayTitle">
-          <div class="tray-heading"><div><span id="trayTitle">YOUR PIECES</span><small id="trayHint">Drag or tap a piece</small></div><strong id="piecesLeft">3</strong></div>
+          <div class="tray-heading"><div><span id="trayTitle">YOUR PIECES</span><small id="trayHint">Drag or tap · fill a row or column</small></div><strong id="piecesLeft">3</strong></div>
           <div class="piece-tray" id="pieceTray"></div>
         </section>
         <footer class="game-footer"><button class="utility-button" id="undoButton" disabled><span>↶</span> Undo</button><button class="utility-button" id="newGame"><span>↻</span> New board</button></footer>

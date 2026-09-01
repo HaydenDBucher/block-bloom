@@ -11,7 +11,7 @@ const SHAPES = [
 
 const $ = id => document.getElementById(id);
 const emptyBoard = () => Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
-const defaultState = { board: emptyBoard(), tray: [], score: 0, lines: 0, combo: 0, bestScore: 0, bestCombo: 0, totalLines: 0, theme: 0, sound: true, haptics: true, turns: 0, runRecorded: false };
+const defaultState = { board: emptyBoard(), tray: [], score: 0, lines: 0, combo: 0, runBestCombo: 0, bestScore: 0, bestCombo: 0, totalLines: 0, theme: 0, sound: true, haptics: true, turns: 0, runRecorded: false };
 
 function loadState() {
   let saved = null;
@@ -20,7 +20,7 @@ function loadState() {
   const validBoard = Array.isArray(next.board) && next.board.length === GRID_SIZE && next.board.every(row => Array.isArray(row) && row.length === GRID_SIZE);
   next.board = validBoard ? next.board.map(row => row.map(cell => COLORS.includes(cell) ? cell : null)) : emptyBoard();
   next.tray = Array.isArray(next.tray) ? next.tray.filter(validPiece).slice(0, 3) : [];
-  ['score','lines','combo','bestScore','bestCombo','totalLines','turns'].forEach(key => next[key] = Math.max(0, Number.isFinite(Number(next[key])) ? Number(next[key]) : 0));
+  ['score','lines','combo','runBestCombo','bestScore','bestCombo','totalLines','turns'].forEach(key => next[key] = Math.max(0, Number.isFinite(Number(next[key])) ? Number(next[key]) : 0));
   next.theme = Math.max(0, Math.min(THEMES.length - 1, Math.round(Number(next.theme) || 0)));
   next.sound = next.sound !== false; next.haptics = next.haptics !== false;
   return next;
@@ -37,7 +37,7 @@ let undoSnapshot = null;
 let audioContext = null;
 
 const save = () => { try { localStorage.setItem('block-bloom-state', JSON.stringify(state)); } catch { toast('Progress could not be saved'); } };
-const cloneRunState = () => JSON.parse(JSON.stringify({ board: state.board, tray: state.tray, score: state.score, lines: state.lines, combo: state.combo, bestScore: state.bestScore, bestCombo: state.bestCombo, totalLines: state.totalLines, turns: state.turns, runRecorded: state.runRecorded }));
+const cloneRunState = () => JSON.parse(JSON.stringify({ board: state.board, tray: state.tray, score: state.score, lines: state.lines, combo: state.combo, runBestCombo: state.runBestCombo, bestScore: state.bestScore, bestCombo: state.bestCombo, totalLines: state.totalLines, turns: state.turns, runRecorded: state.runRecorded }));
 
 function shapeFits(matrix, row, col, board = state.board) {
   return matrix.every((line, r) => line.every((cell, c) => !cell || (row + r >= 0 && col + c >= 0 && row + r < GRID_SIZE && col + c < GRID_SIZE && !board[row + r][col + c])));
@@ -130,7 +130,7 @@ function selectPiece(index) {
   if (resolving || !state.tray[index]) return;
   selectedIndex = selectedIndex === index ? null : index;
   renderTray();
-  $('trayHint').textContent = selectedIndex === null ? 'Drag or tap a piece' : 'Now tap a board space';
+  $('trayHint').textContent = selectedIndex === null ? 'Drag or tap · fill a row or column' : 'Now tap a board space';
   if (selectedIndex !== null) { pulse('select'); haptic(8); }
 }
 
@@ -218,7 +218,7 @@ function placePiece(row, col) {
   const lineBonus = cleared.count ? 100 * cleared.count * nextCombo + Math.max(0, cleared.count - 1) * 75 : 0;
   const gained = blocks * 5 + lineBonus;
   state.score += gained; state.combo = nextCombo; state.lines += cleared.count; state.totalLines += cleared.count;
-  state.bestScore = Math.max(state.bestScore, state.score); state.bestCombo = Math.max(state.bestCombo, state.combo);
+  state.runBestCombo = Math.max(state.runBestCombo, state.combo); state.bestScore = Math.max(state.bestScore, state.score); state.bestCombo = Math.max(state.bestCombo, state.combo);
   const refilled = !state.tray.length;
   if (refilled) fillTray();
   drawBoard(); renderTray(refilled); renderStats();
@@ -236,11 +236,11 @@ function resolveClear(lines, gained) {
 
 function showGain(points, message = `+${points}`) { const element = $('boardMessage'); element.textContent = message; element.classList.remove('show'); void element.offsetWidth; element.classList.add('show'); }
 function checkGameOver() { if (!resolving && !hasMove()) endGame(); }
-function endGame() { if (!state.runRecorded) state.runRecorded = true; save(); $('finalScore').textContent = state.score.toLocaleString(); $('gameOver').classList.add('visible'); $('gameOver').setAttribute('aria-hidden', 'false'); pulse('gameover'); }
+function endGame() { if (!state.runRecorded) state.runRecorded = true; save(); $('finalScore').textContent = state.score.toLocaleString(); $('finalLines').textContent = state.lines; $('finalFlow').textContent = state.runBestCombo; $('gameOver').classList.add('visible'); $('gameOver').setAttribute('aria-hidden', 'false'); pulse('gameover'); }
 
 function newGame(force = false) {
   if (!force && state.score > 0 && !confirm('Start a new board? Your current run will end.')) return;
-  clearTimeout(resolveTimer); resolving = false; cancelPointer(false); state.board = emptyBoard(); state.tray = []; state.score = 0; state.lines = 0; state.combo = 0; state.turns = 0; state.runRecorded = false; undoSnapshot = null; fillTray(); save(); render(true); toast('Fresh board, fresh flow');
+  clearTimeout(resolveTimer); resolving = false; cancelPointer(false); state.board = emptyBoard(); state.tray = []; state.score = 0; state.lines = 0; state.combo = 0; state.runBestCombo = 0; state.turns = 0; state.runRecorded = false; undoSnapshot = null; fillTray(); save(); render(true); toast('Fresh board, fresh flow');
 }
 
 function undo() { if (!undoSnapshot || resolving) return; Object.assign(state, undoSnapshot); undoSnapshot = null; selectedIndex = null; save(); render(); toast('Move undone'); pulse('select'); }

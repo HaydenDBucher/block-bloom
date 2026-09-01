@@ -26,3 +26,10 @@ node --check service-worker.js
 - Undo, themes, sound, and haptic settings
 - Persistent progress and defensive save validation
 - Installable PWA with offline caching
+
+## Assignment evidence
+
+- [Submission checklist](SUBMISSION.md)
+- [Concise build log](BUILD_LOG.md)
+- [Unfamiliar-user test protocol and note](USER_TEST.md)
+- [Live demonstration and reflection notes](DEMO_NOTES.md)
