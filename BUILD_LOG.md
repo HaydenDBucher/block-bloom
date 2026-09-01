@@ -70,3 +70,10 @@ git status -sb
 - Revision: every refill now guarantees two large shapes, the third has an 85% large-shape preference, and a piece-set version refreshes older saved trays immediately.
 - Fairness: if the board is too crowded for the generated tray, a 1×1 recovery piece is paired with two large choices so the run can continue without losing the requested large-piece identity.
 - Verification: 200 generated trays must each contain at least two large pieces and at least one legal move.
+
+### 7. Balanced mixed trays — September 1
+
+- Human feedback: guaranteeing two large pieces made the tray feel repetitive and too heavy.
+- Revision: each tray now contains one large rectangle, one original-style shape, and one 50/50 choice between those categories.
+- Result: no tray can be entirely large, while large rectangles average approximately 50% across repeated refills.
+- Verification: 200 generated trays must contain one or two large rectangles, retain a legal move, and remain within a 43–57% distribution band.

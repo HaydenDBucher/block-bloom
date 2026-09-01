@@ -34,11 +34,11 @@ source += `
     fillTray();
     assert(state.tray.length === 3, 'tray contains three pieces');
     assert(hasMove(), 'generated tray has a legal move');
-    const trayLargePieces = state.tray.filter(piece => piece.matrix.flat().filter(Boolean).length >= 4 && piece.matrix.length >= 2 && piece.matrix[0].length >= 2).length;
-    assert(trayLargePieces >= 2, 'each fresh tray contains at least two large blocks');
+    const trayLargePieces = state.tray.filter(piece => piece.matrix.length >= 2 && piece.matrix[0].length >= 2 && piece.matrix.every(row => row.every(Boolean))).length;
+    assert(trayLargePieces >= 1 && trayLargePieces <= 2, 'each fresh tray mixes large and original-style blocks');
     largePieces += trayLargePieces;
   }
-  assert(largePieces >= 400, 'large blocks make up at least two thirds of generated pieces');
+  assert(largePieces >= 260 && largePieces <= 340, 'large blocks average approximately half of generated pieces');
   console.log('Mechanics assertions passed:', passed);
 `;
 

@@ -14,8 +14,9 @@ const LARGE_SHAPES = [
   [[1,1],[1,1],[1,1]],
   [[1,1,1],[1,1,1],[1,1,1]]
 ];
-const LARGE_PIECE_CHANCE = 0.85;
-const PIECE_SET_VERSION = 2;
+const MIXED_SHAPES = SHAPES.filter(matrix => !(matrix.length >= 2 && matrix[0].length >= 2 && matrix.every(row => row.every(Boolean))));
+const LARGE_PIECE_CHANCE = 0.5;
+const PIECE_SET_VERSION = 3;
 
 const $ = id => document.getElementById(id);
 const emptyBoard = () => Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
@@ -58,13 +59,18 @@ function hasMove(tray = state.tray, board = state.board) {
 }
 
 function randomPiece(index) {
-  const pool = Math.random() < LARGE_PIECE_CHANCE ? LARGE_SHAPES : SHAPES;
+  const pool = Math.random() < LARGE_PIECE_CHANCE ? LARGE_SHAPES : MIXED_SHAPES;
   const matrix = pool[Math.floor(Math.random() * pool.length)];
   return { matrix, color: COLORS[(state.turns + index + Math.floor(Math.random() * COLORS.length)) % COLORS.length] };
 }
 
 function randomLargePiece(index) {
   const matrix = LARGE_SHAPES[Math.floor(Math.random() * LARGE_SHAPES.length)];
+  return { matrix, color: COLORS[(state.turns + index + Math.floor(Math.random() * COLORS.length)) % COLORS.length] };
+}
+
+function randomMixedPiece(index) {
+  const matrix = MIXED_SHAPES[Math.floor(Math.random() * MIXED_SHAPES.length)];
   return { matrix, color: COLORS[(state.turns + index + Math.floor(Math.random() * COLORS.length)) % COLORS.length] };
 }
 
@@ -78,10 +84,10 @@ function scorePlacement(blocks, lineCount, combo) {
 function fillTray() {
   let candidate;
   for (let attempt = 0; attempt < 40; attempt += 1) {
-    candidate = [randomLargePiece(0), randomLargePiece(1), randomPiece(2)];
+    candidate = [randomLargePiece(0), randomMixedPiece(1), randomPiece(2)];
     if (hasMove(candidate)) break;
   }
-  if (!hasMove(candidate)) candidate = [{ matrix: [[1]], color: COLORS[state.turns % COLORS.length] }, randomLargePiece(1), randomLargePiece(2)];
+  if (!hasMove(candidate)) candidate = [{ matrix: [[1]], color: COLORS[state.turns % COLORS.length] }, randomLargePiece(1), randomMixedPiece(2)];
   state.tray = candidate;
   selectedIndex = null;
 }
