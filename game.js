@@ -14,11 +14,12 @@ const LARGE_SHAPES = [
   [[1,1],[1,1],[1,1]],
   [[1,1,1],[1,1,1],[1,1,1]]
 ];
-const LARGE_PIECE_CHANCE = 0.7;
+const LARGE_PIECE_CHANCE = 0.85;
+const PIECE_SET_VERSION = 2;
 
 const $ = id => document.getElementById(id);
 const emptyBoard = () => Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
-const defaultState = { board: emptyBoard(), tray: [], score: 0, lines: 0, combo: 0, runBestCombo: 0, bestScore: 0, bestCombo: 0, totalLines: 0, theme: 0, sound: true, haptics: true, turns: 0, runRecorded: false };
+const defaultState = { board: emptyBoard(), tray: [], score: 0, lines: 0, combo: 0, runBestCombo: 0, bestScore: 0, bestCombo: 0, totalLines: 0, theme: 0, sound: true, haptics: true, turns: 0, runRecorded: false, pieceSetVersion: PIECE_SET_VERSION };
 
 function loadState() {
   let saved = null;
@@ -27,6 +28,8 @@ function loadState() {
   const validBoard = Array.isArray(next.board) && next.board.length === GRID_SIZE && next.board.every(row => Array.isArray(row) && row.length === GRID_SIZE);
   next.board = validBoard ? next.board.map(row => row.map(cell => COLORS.includes(cell) ? cell : null)) : emptyBoard();
   next.tray = Array.isArray(next.tray) ? next.tray.filter(validPiece).slice(0, 3) : [];
+  if (saved?.pieceSetVersion !== PIECE_SET_VERSION) next.tray = [];
+  next.pieceSetVersion = PIECE_SET_VERSION;
   ['score','lines','combo','runBestCombo','bestScore','bestCombo','totalLines','turns'].forEach(key => next[key] = Math.max(0, Number.isFinite(Number(next[key])) ? Number(next[key]) : 0));
   next.theme = Math.max(0, Math.min(THEMES.length - 1, Math.round(Number(next.theme) || 0)));
   next.sound = next.sound !== false; next.haptics = next.haptics !== false;
@@ -60,6 +63,11 @@ function randomPiece(index) {
   return { matrix, color: COLORS[(state.turns + index + Math.floor(Math.random() * COLORS.length)) % COLORS.length] };
 }
 
+function randomLargePiece(index) {
+  const matrix = LARGE_SHAPES[Math.floor(Math.random() * LARGE_SHAPES.length)];
+  return { matrix, color: COLORS[(state.turns + index + Math.floor(Math.random() * COLORS.length)) % COLORS.length] };
+}
+
 function scorePlacement(blocks, lineCount, combo) {
   const placementPoints = blocks * 20;
   const clearPoints = lineCount ? 300 * lineCount * combo : 0;
@@ -70,10 +78,10 @@ function scorePlacement(blocks, lineCount, combo) {
 function fillTray() {
   let candidate;
   for (let attempt = 0; attempt < 40; attempt += 1) {
-    candidate = [randomPiece(0), randomPiece(1), randomPiece(2)];
+    candidate = [randomLargePiece(0), randomLargePiece(1), randomPiece(2)];
     if (hasMove(candidate)) break;
   }
-  if (!hasMove(candidate)) candidate[0] = { matrix: [[1]], color: COLORS[state.turns % COLORS.length] };
+  if (!hasMove(candidate)) candidate = [{ matrix: [[1]], color: COLORS[state.turns % COLORS.length] }, randomLargePiece(1), randomLargePiece(2)];
   state.tray = candidate;
   selectedIndex = null;
 }

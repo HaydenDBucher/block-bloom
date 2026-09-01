@@ -63,3 +63,10 @@ git status -sb
 - Change: weighted 70% of initial piece draws toward 2×2, 2×3, 3×2, and 3×3 blocks while preserving smaller recovery shapes and the legal-move safeguard.
 - Change: increased placement scoring to 20 points per occupied square, line clears to 300 points per line multiplied by flow, and simultaneous-clear bonuses to 200 points per extra line.
 - Verification: added exact score assertions and a 600-piece distribution test requiring at least half of generated pieces to be large blocks.
+
+### 6. Guaranteed large-piece trays — September 1
+
+- Diagnosis: the weighted generator could still produce a visibly small tray, and existing saved trays survived the generator update.
+- Revision: every refill now guarantees two large shapes, the third has an 85% large-shape preference, and a piece-set version refreshes older saved trays immediately.
+- Fairness: if the board is too crowded for the generated tray, a 1×1 recovery piece is paired with two large choices so the run can continue without losing the requested large-piece identity.
+- Verification: 200 generated trays must each contain at least two large pieces and at least one legal move.
