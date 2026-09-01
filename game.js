@@ -8,6 +8,13 @@ const SHAPES = [
   [[1,1],[1,0]], [[1,1],[0,1]], [[1,1,1],[0,1,0]],
   [[1,0],[1,0],[1,1]], [[1,1,0],[0,1,1]]
 ];
+const LARGE_SHAPES = [
+  [[1,1],[1,1]],
+  [[1,1,1],[1,1,1]],
+  [[1,1],[1,1],[1,1]],
+  [[1,1,1],[1,1,1],[1,1,1]]
+];
+const LARGE_PIECE_CHANCE = 0.7;
 
 const $ = id => document.getElementById(id);
 const emptyBoard = () => Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
@@ -48,8 +55,16 @@ function hasMove(tray = state.tray, board = state.board) {
 }
 
 function randomPiece(index) {
-  const matrix = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+  const pool = Math.random() < LARGE_PIECE_CHANCE ? LARGE_SHAPES : SHAPES;
+  const matrix = pool[Math.floor(Math.random() * pool.length)];
   return { matrix, color: COLORS[(state.turns + index + Math.floor(Math.random() * COLORS.length)) % COLORS.length] };
+}
+
+function scorePlacement(blocks, lineCount, combo) {
+  const placementPoints = blocks * 20;
+  const clearPoints = lineCount ? 300 * lineCount * combo : 0;
+  const multiLineBonus = Math.max(0, lineCount - 1) * 200;
+  return placementPoints + clearPoints + multiLineBonus;
 }
 
 function fillTray() {
@@ -215,8 +230,7 @@ function placePiece(row, col) {
   const cleared = detectLines();
   const blocks = piece.matrix.flat().filter(Boolean).length;
   const nextCombo = cleared.count ? state.combo + 1 : 0;
-  const lineBonus = cleared.count ? 100 * cleared.count * nextCombo + Math.max(0, cleared.count - 1) * 75 : 0;
-  const gained = blocks * 5 + lineBonus;
+  const gained = scorePlacement(blocks, cleared.count, nextCombo);
   state.score += gained; state.combo = nextCombo; state.lines += cleared.count; state.totalLines += cleared.count;
   state.runBestCombo = Math.max(state.runBestCombo, state.combo); state.bestScore = Math.max(state.bestScore, state.score); state.bestCombo = Math.max(state.bestCombo, state.combo);
   const refilled = !state.tray.length;

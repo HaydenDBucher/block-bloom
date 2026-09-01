@@ -24,13 +24,19 @@ source += `
   assert(lines.count === 2 && lines.rows[0] === 0 && lines.columns[0] === 0, 'detects simultaneous row and column');
   clearDetected(lines);
   assert(state.board[0].every(cell => cell === null) && state.board.every(row => row[0] === null), 'clears simultaneous lines');
+  assert(scorePlacement(4, 0, 0) === 80, 'scores large placement quickly');
+  assert(scorePlacement(6, 1, 1) === 420, 'scores first line clear');
+  assert(scorePlacement(9, 2, 2) === 1580, 'rewards combo and multi-line clear');
   state.board = emptyBoard();
+  let largePieces = 0;
   for (let run = 0; run < 200; run += 1) {
     state.tray = [];
     fillTray();
     assert(state.tray.length === 3, 'tray contains three pieces');
     assert(hasMove(), 'generated tray has a legal move');
+    largePieces += state.tray.filter(piece => piece.matrix.flat().filter(Boolean).length >= 4 && piece.matrix.length >= 2 && piece.matrix[0].length >= 2).length;
   }
+  assert(largePieces >= 300, 'large blocks make up at least half of generated pieces');
   console.log('Mechanics assertions passed:', passed);
 `;
 

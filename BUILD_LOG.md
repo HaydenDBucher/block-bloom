@@ -56,3 +56,10 @@ node --check game.js
 node --check service-worker.js
 git status -sb
 ```
+
+### 5. Endless-run progression tuning — September 1
+
+- Specification: keep the run endless until no move fits, offer large rectangular blocks more often, and make score growth feel immediate.
+- Change: weighted 70% of initial piece draws toward 2×2, 2×3, 3×2, and 3×3 blocks while preserving smaller recovery shapes and the legal-move safeguard.
+- Change: increased placement scoring to 20 points per occupied square, line clears to 300 points per line multiplied by flow, and simultaneous-clear bonuses to 200 points per extra line.
+- Verification: added exact score assertions and a 600-piece distribution test requiring at least half of generated pieces to be large blocks.
